@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0eb37hu" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.2.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.0.0">
+  <bpmn:process id="extractPDF" name="ExtractPdf" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Start">
+      <bpmn:outgoing>Flow_1ux9lky</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="LoadWordfile" name="Load Pdf file">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="c-files-load-from-disk" />
+        <zeebe:ioMapping>
+          <zeebe:input source="= &#34;D:\dev\intellij\community\zeebe-cherry-officepdf-workers\src\test\resources\pdf&#34;" target="folder" />
+          <zeebe:input source="= &#34;largeDocument.pdf&#34;" target="fileName" />
+          <zeebe:input source="= &#34;UNCHANGE&#34;" target="policy" />
+          <zeebe:input source="= &#34;TEMPFOLDER&#34;" target="storageDefinition" />
+          <zeebe:output source="= fileLoaded" target="cherrySourcePdfDocument" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ux9lky</bpmn:incoming>
+      <bpmn:outgoing>Flow_1bm5i3a</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1ux9lky" sourceRef="StartEvent_1" targetRef="LoadWordfile" />
+    <bpmn:sequenceFlow id="Flow_1bm5i3a" sourceRef="LoadWordfile" targetRef="Gateway_1eceq6j" />
+    <bpmn:sequenceFlow id="Flow_1f24mg8" sourceRef="Gateway_1eceq6j" targetRef="Activity_1p1adkn" />
+    <bpmn:parallelGateway id="Gateway_1eceq6j">
+      <bpmn:incoming>Flow_1bm5i3a</bpmn:incoming>
+      <bpmn:outgoing>Flow_1f24mg8</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0tel8y6</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1usebby</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_0tel8y6" sourceRef="Gateway_1eceq6j" targetRef="Activity_0mjawh2" />
+    <bpmn:sequenceFlow id="Flow_1usebby" sourceRef="Gateway_1eceq6j" targetRef="Activity_07s5nwk" />
+    <bpmn:sequenceFlow id="Flow_1gtx03p" sourceRef="Activity_1p1adkn" targetRef="Activity_0wf938b" />
+    <bpmn:sequenceFlow id="Flow_1grw2px" sourceRef="Activity_0mjawh2" targetRef="Activity_0feecgs" />
+    <bpmn:sequenceFlow id="Flow_1cv090h" sourceRef="Activity_07s5nwk" targetRef="Activity_0f1zfvq" />
+    <bpmn:sequenceFlow id="Flow_0p1344m" sourceRef="Activity_0wf938b" targetRef="Gateway_09oc0zg" />
+    <bpmn:parallelGateway id="Gateway_09oc0zg">
+      <bpmn:incoming>Flow_0p1344m</bpmn:incoming>
+      <bpmn:incoming>Flow_1gble28</bpmn:incoming>
+      <bpmn:incoming>Flow_170zlbl</bpmn:incoming>
+      <bpmn:outgoing>Flow_04d891w</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_04d891w" sourceRef="Gateway_09oc0zg" targetRef="Activity_1w2ctf0" />
+    <bpmn:endEvent id="Event_0c8snmz" name="Fine">
+      <bpmn:incoming>Flow_175ksxa</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_175ksxa" sourceRef="Activity_1w2ctf0" targetRef="Event_0c8snmz" />
+    <bpmn:sequenceFlow id="Flow_1gble28" sourceRef="Activity_0feecgs" targetRef="Gateway_09oc0zg" />
+    <bpmn:sequenceFlow id="Flow_170zlbl" sourceRef="Activity_0f1zfvq" targetRef="Gateway_09oc0zg" />
+    <bpmn:serviceTask id="Activity_1p1adkn" name="Extract 3 pages">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="c-pdf-extractpages" />
+        <zeebe:ioMapping>
+          <zeebe:input source="= &#34;5-7&#34;" target="extractExpression" />
+          <zeebe:input source="= cherrySourcePdfDocument" target="sourceFile" />
+          <zeebe:input source="= &#34;3pages&#34;" target="destinationFileName" />
+          <zeebe:input source="=&#34;TEMPFOLDER&#34;" target="destinationStorageDefinition" />
+          <zeebe:output source="= destinationFile" target="ThreePagesDocument" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1f24mg8</bpmn:incoming>
+      <bpmn:outgoing>Flow_1gtx03p</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_0mjawh2" name="Extract page 2 to end">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="c-pdf-extractpages" />
+        <zeebe:ioMapping>
+          <zeebe:input source="= &#34;2-n&#34;" target="extractExpression" />
+          <zeebe:input source="= cherrySourcePdfDocument" target="sourceFile" />
+          <zeebe:input source="= &#34;Page2ToEnd&#34;" target="destinationFileName" />
+          <zeebe:input source="=&#34;TEMPFOLDER&#34;" target="destinationStorageDefinition" />
+          <zeebe:output source="= destinationFile" target="TwoToEndDocument" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0tel8y6</bpmn:incoming>
+      <bpmn:outgoing>Flow_1grw2px</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_07s5nwk" name="multiple extract">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="c-pdf-extractpages" />
+        <zeebe:ioMapping>
+          <zeebe:input source="= &#34;2-6,8,10-12,14-n&#34;" target="extractExpression" />
+          <zeebe:input source="= cherrySourcePdfDocument" target="sourceFile" />
+          <zeebe:input source="= &#34;MultipleExtract&#34;" target="destinationFileName" />
+          <zeebe:input source="=&#34;TEMPFOLDER&#34;" target="destinationStorageDefinition" />
+          <zeebe:output source="= destinationFile" target="multiplePagesDocument" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1usebby</bpmn:incoming>
+      <bpmn:outgoing>Flow_1cv090h</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_0wf938b" name="save 3 pages">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:input source="= ThreePagesDocument" target="sourceFile" />
+          <zeebe:input source="= &#34;D:\dev\intellij\community\zeebe-cherry-officepdf-workers\src\test\resources\pdf\output&#34;" target="folder" />
+          <zeebe:input source="= &#34;ThreePages.pdf&#34;" target="fileName" />
+        </zeebe:ioMapping>
+        <zeebe:taskDefinition type="c-files-save-to-disk" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1gtx03p</bpmn:incoming>
+      <bpmn:outgoing>Flow_0p1344m</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_0feecgs" name="save page 2 to end">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="c-files-save-to-disk" />
+        <zeebe:ioMapping>
+          <zeebe:input source="= TwoToEndDocument" target="sourceFile" />
+          <zeebe:input source="= &#34;D:\dev\intellij\community\zeebe-cherry-officepdf-workers\src\test\resources\pdf\output&#34;" target="folder" />
+          <zeebe:input source="= &#34;TwoToEnd.pdf&#34;" target="fileName" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1grw2px</bpmn:incoming>
+      <bpmn:outgoing>Flow_1gble28</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_0f1zfvq" name="save multiple extract">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="c-files-save-to-disk" />
+        <zeebe:ioMapping>
+          <zeebe:input source="= multiplePagesDocument" target="sourceFile" />
+          <zeebe:input source="= &#34;D:\dev\intellij\community\zeebe-cherry-officepdf-workers\src\test\resources\pdf\output&#34;" target="folder" />
+          <zeebe:input source="= &#34;MultiplePages.pdf&#34;" target="fileName" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1cv090h</bpmn:incoming>
+      <bpmn:outgoing>Flow_170zlbl</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Activity_1w2ctf0" name="review">
+      <bpmn:incoming>Flow_04d891w</bpmn:incoming>
+      <bpmn:outgoing>Flow_175ksxa</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:boundaryEvent id="Event_0miquld" attachedToRef="Activity_1w2ctf0">
+      <bpmn:outgoing>Flow_0lp2t66</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0ik7sja">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT2H</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="Event_02lymlo" name="Too long">
+      <bpmn:incoming>Flow_0lp2t66</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0lp2t66" sourceRef="Event_0miquld" targetRef="Event_02lymlo" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="extractPDF">
+      <bpmndi:BPMNEdge id="Flow_0lp2t66_di" bpmnElement="Flow_0lp2t66">
+        <di:waypoint x="900" y="175" />
+        <di:waypoint x="900" y="230" />
+        <di:waypoint x="982" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_170zlbl_di" bpmnElement="Flow_170zlbl">
+        <di:waypoint x="720" y="330" />
+        <di:waypoint x="780" y="330" />
+        <di:waypoint x="780" y="142" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gble28_di" bpmnElement="Flow_1gble28">
+        <di:waypoint x="720" y="220" />
+        <di:waypoint x="780" y="220" />
+        <di:waypoint x="780" y="142" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_175ksxa_di" bpmnElement="Flow_175ksxa">
+        <di:waypoint x="940" y="117" />
+        <di:waypoint x="982" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04d891w_di" bpmnElement="Flow_04d891w">
+        <di:waypoint x="805" y="117" />
+        <di:waypoint x="840" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0p1344m_di" bpmnElement="Flow_0p1344m">
+        <di:waypoint x="720" y="117" />
+        <di:waypoint x="755" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1cv090h_di" bpmnElement="Flow_1cv090h">
+        <di:waypoint x="590" y="330" />
+        <di:waypoint x="620" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1grw2px_di" bpmnElement="Flow_1grw2px">
+        <di:waypoint x="590" y="220" />
+        <di:waypoint x="620" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gtx03p_di" bpmnElement="Flow_1gtx03p">
+        <di:waypoint x="590" y="117" />
+        <di:waypoint x="620" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1usebby_di" bpmnElement="Flow_1usebby">
+        <di:waypoint x="440" y="142" />
+        <di:waypoint x="440" y="330" />
+        <di:waypoint x="490" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0tel8y6_di" bpmnElement="Flow_0tel8y6">
+        <di:waypoint x="440" y="142" />
+        <di:waypoint x="440" y="220" />
+        <di:waypoint x="490" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1f24mg8_di" bpmnElement="Flow_1f24mg8">
+        <di:waypoint x="465" y="117" />
+        <di:waypoint x="490" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1bm5i3a_di" bpmnElement="Flow_1bm5i3a">
+        <di:waypoint x="390" y="117" />
+        <di:waypoint x="415" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ux9lky_di" bpmnElement="Flow_1ux9lky">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="290" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="185" y="142" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0t5lxha_di" bpmnElement="LoadWordfile">
+        <dc:Bounds x="290" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1l71k95_di" bpmnElement="Gateway_1eceq6j">
+        <dc:Bounds x="415" y="92" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0oct8lq_di" bpmnElement="Gateway_09oc0zg">
+        <dc:Bounds x="755" y="92" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0c8snmz_di" bpmnElement="Event_0c8snmz">
+        <dc:Bounds x="982" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="989" y="142" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1f9gpbn_di" bpmnElement="Activity_1p1adkn">
+        <dc:Bounds x="490" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0o0i310_di" bpmnElement="Activity_0mjawh2">
+        <dc:Bounds x="490" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_110dsfe_di" bpmnElement="Activity_07s5nwk">
+        <dc:Bounds x="490" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0p98lqk_di" bpmnElement="Activity_0wf938b">
+        <dc:Bounds x="620" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0oy13cm_di" bpmnElement="Activity_0feecgs">
+        <dc:Bounds x="620" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1qnwzgq_di" bpmnElement="Activity_0f1zfvq">
+        <dc:Bounds x="620" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1mtgjmo_di" bpmnElement="Activity_1w2ctf0">
+        <dc:Bounds x="840" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_02lymlo_di" bpmnElement="Event_02lymlo">
+        <dc:Bounds x="982" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="979" y="255" width="42" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0x7axdw_di" bpmnElement="Event_0miquld">
+        <dc:Bounds x="882" y="139" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

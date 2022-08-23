@@ -11,7 +11,7 @@
     <bpmn:sequenceFlow id="Flow_1ozq1f5" sourceRef="Event_1s7c15t" targetRef="Event_0qsiz0n" />
     <bpmn:serviceTask id="Activity_01qx4mx" name="Transform Word to PDF">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="v-pdf-convert-to" />
+        <zeebe:taskDefinition type="c-pdf-convert-to" />
         <zeebe:ioMapping>
           <zeebe:input source="= vercorsWordFileVariable" target="sourceFile" />
           <zeebe:input source="= &#34;JSON&#34;" target="sourceStorageDefinition" />
@@ -26,12 +26,11 @@
     <bpmn:sequenceFlow id="Flow_1mkzok0" sourceRef="Activity_00225j6" targetRef="Gateway_0oiub51" />
     <bpmn:serviceTask id="Activity_00225j6" name="Save Word To File">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="v-files-save-to-disk" />
+        <zeebe:taskDefinition type="c-files-save-to-disk" />
         <zeebe:ioMapping>
           <zeebe:input source="= &#34;./src/test/resources/pdf/&#34;" target="folder" />
           <zeebe:input source="= &#34;DocumentWordGenerated.pdf&#34;" target="fileName" />
           <zeebe:input source="= vercorsWordPdfFileVariable" target="sourceFile" />
-          <zeebe:input source="= &#34;TEMPFOLDER&#34;" target="storageDefinition" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_12ppfo1</bpmn:incoming>
@@ -43,7 +42,7 @@
     </bpmn:startEvent>
     <bpmn:serviceTask id="LoadWordfile" name="Load Word file">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="v-files-load-from-disk" />
+        <zeebe:taskDefinition type="c-files-load-from-disk" />
         <zeebe:ioMapping>
           <zeebe:input source="= &#34;./src/test/resources/pdf/&#34;" target="folder" />
           <zeebe:input source="= &#34;*.docx&#34;" target="filterFile" />
@@ -79,7 +78,7 @@
     <bpmn:sequenceFlow id="Flow_14nhavf" sourceRef="Activity_1yv1xnp" targetRef="Gateway_0oiub51" />
     <bpmn:serviceTask id="Activity_0maisro" name="Load OpenOffice file">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="v-files-load-from-disk" />
+        <zeebe:taskDefinition type="c-files-load-from-disk" />
         <zeebe:ioMapping>
           <zeebe:input source="= &#34;CherryExplanationOpenOffice.odt&#34;" target="fileName" />
           <zeebe:input source="= &#34;./src/test/resources/pdf/&#34;" target="folder" />
@@ -100,19 +99,18 @@
           <zeebe:input source="= &#34;JSON&#34;" target="sourceStorageDefinition" />
           <zeebe:output source="= destinationFile" target="vercorsOpenOfficePdfFileVariable" />
         </zeebe:ioMapping>
-        <zeebe:taskDefinition type="v-pdf-convert-to" />
+        <zeebe:taskDefinition type="c-pdf-convert-to" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1hm95ya</bpmn:incoming>
       <bpmn:outgoing>Flow_1qrza7h</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:serviceTask id="Activity_1yv1xnp" name="Save OpenOffice to file">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="v-file-save-to-disk" />
+        <zeebe:taskDefinition type="c-files-save-to-disk" />
         <zeebe:ioMapping>
           <zeebe:input source="= &#34;DocumentOpenOfficeGenerated.pdf&#34;" target="fileName" />
           <zeebe:input source="= &#34;./src/test/resources/pdf/&#34;" target="folder" />
           <zeebe:input source="= vercorsOpenOfficePdfFileVariable" target="sourceFile" />
-          <zeebe:input source="= &#34;TEMPFOLDER&#34;" target="storageDefinition" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1qrza7h</bpmn:incoming>

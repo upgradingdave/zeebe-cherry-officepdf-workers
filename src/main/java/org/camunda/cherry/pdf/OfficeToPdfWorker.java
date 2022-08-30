@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
+import java.util.Collections;
 
 
 @Component
@@ -40,15 +41,16 @@ public class OfficeToPdfWorker extends AbstractWorker {
     public OfficeToPdfWorker() {
         super(WORKERTYPE_PDF_CONVERT_TO,
                 Arrays.asList(
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_SOURCE_FILE, Object.class, Level.REQUIRED, "FileVariable for the file to convert"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_FILE_NAME, String.class, Level.REQUIRED, "Destination file name"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION, String.class, FileVariableFactory.FileVariableStorage.JSON.toString(), Level.OPTIONAL, "Storage Definition use to describe how to save the file")
+                        AbstractWorker.WorkerParameter.getInstance(INPUT_SOURCE_FILE, "Source file", Object.class, Level.REQUIRED, "FileVariable for the file to convert"),
+                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_FILE_NAME, "Destination file name", String.class, Level.REQUIRED, "Destination file name"),
+                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION, "Destination storage definitino", String.class, FileVariableFactory.FileVariableStorage.JSON.toString(), Level.OPTIONAL, "Storage Definition use to describe how to save the file")
 
                 ),
-                Arrays.asList(
-                        AbstractWorker.WorkerParameter.getInstance(OUTPUT_DESTINATION_FILE, Object.class, Level.REQUIRED, "FileVariable converted")
+                Collections.singletonList(
+                        AbstractWorker.WorkerParameter.getInstance(OUTPUT_DESTINATION_FILE, "Destination file", Object.class, Level.REQUIRED, "FileVariable converted")
                 ),
-                Arrays.asList(BPMERROR_CONVERSION_ERROR, BPMERROR_LOAD_FILE_ERROR));
+                Arrays.asList(AbstractWorker.BpmnError.getInstance(BPMERROR_CONVERSION_ERROR, "Conversion error"),
+                        AbstractWorker.BpmnError.getInstance(BPMERROR_LOAD_FILE_ERROR, "Load File error")));
     }
 
     @Override

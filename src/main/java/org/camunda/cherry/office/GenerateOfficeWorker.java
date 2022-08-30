@@ -50,18 +50,19 @@ public class GenerateOfficeWorker extends AbstractWorker {
     public GenerateOfficeWorker() {
         super(WORKERTYPE_OFFICE_GENERATION,
                 Arrays.asList(
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_SOURCE_FILE, Object.class, Level.REQUIRED, "FileVariable for the file to convert"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_SOURCE_STORAGEDEFINITION, String.class, FileVariableFactory.FileVariableStorage.JSON.toString(), Level.OPTIONAL, "Storage Definition use to access the file"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_FILE_NAME, String.class, Level.REQUIRED, "Destination file name"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION, String.class, FileVariableFactory.FileVariableStorage.JSON.toString(), Level.OPTIONAL, "Storage Definition use to describe how to save the file"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_VARIABLES, Map.class, Level.OPTIONAL, "Template document contains place holders. This is the dictionary which contains values for theses place holder"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_VARIABLES_NAMES, String.class, Level.OPTIONAL, "Template document contains place holders. Here the list of variable to add in the dictionary for place holder")
+                        AbstractWorker.WorkerParameter.getInstance(INPUT_SOURCE_FILE, "Source file", Object.class, Level.REQUIRED, "FileVariable for the file to convert"),
+                        AbstractWorker.WorkerParameter.getInstance(INPUT_SOURCE_STORAGEDEFINITION, "Source Storage definition", String.class, FileVariableFactory.FileVariableStorage.JSON.toString(), Level.OPTIONAL, "Storage Definition use to access the file"),
+                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_FILE_NAME, "Destination file name", String.class, Level.REQUIRED, "Destination file name"),
+                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION, "Destination storage defintion", String.class, FileVariableFactory.FileVariableStorage.JSON.toString(), Level.OPTIONAL, "Storage Definition use to describe how to save the file"),
+                        AbstractWorker.WorkerParameter.getInstance(INPUT_VARIABLES, "Dictionary variables for place holder", Map.class, Level.OPTIONAL, "Template document contains place holders. This is the dictionary which contains values for theses place holder"),
+                        AbstractWorker.WorkerParameter.getInstance(INPUT_VARIABLES_NAMES, "Names of variables in the dictionary", String.class, Level.OPTIONAL, "Template document contains place holders. Here the list of variable to add in the dictionary for place holder")
 
                 ),
-                Arrays.asList(
-                        AbstractWorker.WorkerParameter.getInstance(OUTPUT_DESTINATION_FILE, Object.class, Level.REQUIRED, "FileVariable converted")
+                Collections.singletonList(
+                        AbstractWorker.WorkerParameter.getInstance(OUTPUT_DESTINATION_FILE, "Destination file", Object.class, Level.REQUIRED, "FileVariable converted")
                 ),
-                Arrays.asList(BPMERROR_CONVERSION_ERROR, BPMERROR_LOAD_FILE_ERROR));
+                Arrays.asList(AbstractWorker.BpmnError.getInstance( BPMERROR_CONVERSION_ERROR, "Conversion error"),
+                        AbstractWorker.BpmnError.getInstance(BPMERROR_LOAD_FILE_ERROR, "Load file error")));
     }
 
     @Override

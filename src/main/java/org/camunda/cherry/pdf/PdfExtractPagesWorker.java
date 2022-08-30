@@ -16,12 +16,12 @@ import org.camunda.cherry.definition.filevariable.FileVariable;
 import org.camunda.cherry.definition.filevariable.FileVariableFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
+import java.util.Collections;
 
 
 @Component
-public class PdfExtractPagesWorker extends AbstractWorker {
+public class PdfExtractPagesWorker extends PdfWorker {
 
     public static final String BPMERROR_ENCRYPTED_NOT_SUPPORTED = "ENCRYPTED_NOT_SUPPORTED";
     public static final String BPMERROR_LOAD_FILE_ERROR = "LOAD_FILE_ERROR";
@@ -40,16 +40,20 @@ public class PdfExtractPagesWorker extends AbstractWorker {
     public PdfExtractPagesWorker() {
         super(WORKERTYPE_PDF_EXTRACTPAGES,
                 Arrays.asList(
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_SOURCE_FILE, Object.class, Level.REQUIRED, "FileVariable for the file to convert"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_EXTRACT_EXPRESSION, String.class, Level.REQUIRED, "Extract pilot. Example, 2-4 mean extract pages 2 to 4 (document page start at 1). Use 'n' to specify the end of the document (2-n) extract from page 2 to the end. Simple number is accepted to extract a page. Example: 4-5, 10, 15-n or 2-n, 1 (first page to the end)"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_FILE_NAME, String.class, Level.REQUIRED, "Destination file name"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION, String.class, FileVariableFactory.FileVariableStorage.JSON.toString(), Level.OPTIONAL, "Storage Definition use to describe how to save the file")
+                        AbstractWorker.WorkerParameter.getInstance(INPUT_SOURCE_FILE, "Source file", Object.class, Level.REQUIRED, "FileVariable for the file to convert"),
+                        AbstractWorker.WorkerParameter.getInstance(INPUT_EXTRACT_EXPRESSION, "Extract expression", String.class, Level.REQUIRED, "Extract pilot. Example, 2-4 mean extract pages 2 to 4 (document page start at 1). Use 'n' to specify the end of the document (2-n) extract from page 2 to the end. Simple number is accepted to extract a page. Example: 4-5, 10, 15-n or 2-n, 1 (first page to the end)"),
+                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_FILE_NAME, "File name,", String.class, Level.REQUIRED, "Destination file name"),
+                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION, "Destination Storage definition", String.class, FileVariableFactory.FileVariableStorage.JSON.toString(), Level.OPTIONAL, "Storage Definition use to describe how to save the file")
 
                 ),
-                Arrays.asList(
-                        AbstractWorker.WorkerParameter.getInstance(OUTPUT_DESTINATION_FILE, Object.class, Level.REQUIRED, "FileVariable converted")
+                Collections.singletonList(
+                        AbstractWorker.WorkerParameter.getInstance(OUTPUT_DESTINATION_FILE, "Destination variable name", Object.class, Level.REQUIRED, "FileVariable converted")
                 ),
-                Arrays.asList(BPMERROR_ENCRYPTED_NOT_SUPPORTED, BPMERROR_LOAD_FILE_ERROR, BPMERROR_INVALID_EXPRESSION, BPMERROR_SAVE_ERROR));
+                Arrays.asList(AbstractWorker.BpmnError.getInstance(BPMERROR_ENCRYPTED_NOT_SUPPORTED, "PDF Encrypted not supported"),
+                        AbstractWorker.BpmnError.getInstance(BPMERROR_LOAD_FILE_ERROR, "Load file error"),
+                        AbstractWorker.BpmnError.getInstance(BPMERROR_INVALID_EXPRESSION, "Invalid expression"),
+                        AbstractWorker.BpmnError.getInstance(BPMERROR_SAVE_ERROR, "Save error")
+                ));
     }
 
     @Override
@@ -117,17 +121,11 @@ public class PdfExtractPagesWorker extends AbstractWorker {
                 }
             }
 
-            FileVariable fileVariableOut = new FileVariable();
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            try {
-                destinationDocument.save(byteArrayOutputStream);
+            saveOutputPdfDocument(destinationDocument, destinationFileName,
+                    OUTPUT_DESTINATION_FILE,
+                    destinationStorageDefinition,
+                    contextExecution);
 
-                fileVariableOut.value = byteArrayOutputStream.toByteArray();
-                fileVariableOut.name = destinationFileName;
-                setFileVariableValue(OUTPUT_DESTINATION_FILE, destinationStorageDefinition, fileVariableOut, contextExecution);
-            } catch (Exception e) {
-                throw new ZeebeBpmnError(BPMERROR_SAVE_ERROR, "Worker [" + getName() + "] cannot save destination[" + sourceFileVariable.name + "] : " + e);
-            }
         } catch (Exception e) {
             logError("During extraction " + e.toString());
         } finally {

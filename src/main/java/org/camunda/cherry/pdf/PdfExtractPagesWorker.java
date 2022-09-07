@@ -8,10 +8,10 @@ package org.camunda.cherry.pdf;
 
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobClient;
-import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.camunda.cherry.definition.AbstractWorker;
+import org.camunda.cherry.definition.BpmnError;
+import org.camunda.cherry.definition.RunnerParameter;
 import org.camunda.cherry.definition.filevariable.FileVariable;
 import org.camunda.cherry.definition.filevariable.FileVariableFactory;
 import org.springframework.stereotype.Component;
@@ -27,39 +27,53 @@ public class PdfExtractPagesWorker extends PdfWorker {
     public static final String BPMERROR_LOAD_FILE_ERROR = "LOAD_FILE_ERROR";
     public static final String BPMERROR_INVALID_EXPRESSION = "INVALID_EXPRESSION";
     public static final String BPMERROR_SAVE_ERROR = "DESTINATION_SAVE_ERROR";
-
+    public static final String WORKERTYPE_PDF_EXTRACTPAGES = "c-pdf-extractpages";
     private static final String INPUT_SOURCE_FILE = "sourceFile";
     private static final String INPUT_DESTINATION_FILE_NAME = "destinationFileName";
     private static final String INPUT_EXTRACT_EXPRESSION = "extractExpression";
     private static final String INPUT_DESTINATION_STORAGEDEFINITION = "destinationStorageDefinition";
     private static final String OUTPUT_DESTINATION_FILE = "destinationFile";
-    public static final String WORKERTYPE_PDF_EXTRACTPAGES = "c-pdf-extractpages";
 
     // merge https://pdfbox.apache.org/docs/2.0.0/javadocs/org/apache/pdfbox/multipdf/PDFMergerUtility.html
 
     public PdfExtractPagesWorker() {
         super(WORKERTYPE_PDF_EXTRACTPAGES,
                 Arrays.asList(
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_SOURCE_FILE, "Source file", Object.class, Level.REQUIRED, "FileVariable for the file to convert"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_EXTRACT_EXPRESSION, "Extract expression", String.class, Level.REQUIRED, "Extract pilot. Example, 2-4 mean extract pages 2 to 4 (document page start at 1). Use 'n' to specify the end of the document (2-n) extract from page 2 to the end. Simple number is accepted to extract a page. Example: 4-5, 10, 15-n or 2-n, 1 (first page to the end)"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_FILE_NAME, "File name,", String.class, Level.REQUIRED, "Destination file name"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION, "Destination Storage definition", String.class, FileVariableFactory.FileVariableStorage.JSON.toString(), Level.OPTIONAL, "Storage Definition use to describe how to save the file")
+                        RunnerParameter.getInstance(INPUT_SOURCE_FILE,
+                                "Source file",
+                                Object.class,
+                                RunnerParameter.Level.REQUIRED,
+                                "FileVariable for the file to convert"),
+                        RunnerParameter.getInstance(INPUT_EXTRACT_EXPRESSION,
+                                "Extract expression",
+                                String.class,
+                                RunnerParameter.Level.REQUIRED,
+                                "Extract pilot. Example, 2-4 mean extract pages 2 to 4 (document page start at 1). Use 'n' to specify the end of the document (2-n) extract from page 2 to the end. Simple number is accepted to extract a page. Example: 4-5, 10, 15-n or 2-n, 1 (first page to the end)"),
+                        RunnerParameter.getInstance(INPUT_DESTINATION_FILE_NAME,
+                                "File name,",
+                                String.class,
+                                RunnerParameter.Level.REQUIRED,
+                                "Destination file name"),
+                        RunnerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION,
+                                "Destination Storage definition",
+                                String.class,
+                                FileVariableFactory.FileVariableStorage.JSON.toString(),
+                                RunnerParameter.Level.OPTIONAL,
+                                "Storage Definition use to describe how to save the file")
 
                 ),
                 Collections.singletonList(
-                        AbstractWorker.WorkerParameter.getInstance(OUTPUT_DESTINATION_FILE, "Destination variable name", Object.class, Level.REQUIRED, "FileVariable converted")
+                        RunnerParameter.getInstance(OUTPUT_DESTINATION_FILE,
+                                "Destination variable name",
+                                Object.class,
+                                RunnerParameter.Level.REQUIRED,
+                                "FileVariable converted")
                 ),
-                Arrays.asList(AbstractWorker.BpmnError.getInstance(BPMERROR_ENCRYPTED_NOT_SUPPORTED, "PDF Encrypted not supported"),
-                        AbstractWorker.BpmnError.getInstance(BPMERROR_LOAD_FILE_ERROR, "Load file error"),
-                        AbstractWorker.BpmnError.getInstance(BPMERROR_INVALID_EXPRESSION, "Invalid expression"),
-                        AbstractWorker.BpmnError.getInstance(BPMERROR_SAVE_ERROR, "Save error")
+                Arrays.asList(BpmnError.getInstance(BPMERROR_ENCRYPTED_NOT_SUPPORTED, "PDF Encrypted not supported"),
+                        BpmnError.getInstance(BPMERROR_LOAD_FILE_ERROR, "Load file error"),
+                        BpmnError.getInstance(BPMERROR_INVALID_EXPRESSION, "Invalid expression"),
+                        BpmnError.getInstance(BPMERROR_SAVE_ERROR, "Save error")
                 ));
-    }
-
-    @Override
-    @ZeebeWorker(type = WORKERTYPE_PDF_EXTRACTPAGES, autoComplete = true)
-    public void handleWorkerExecution(final JobClient jobClient, final ActivatedJob activatedJob) {
-        super.handleWorkerExecution(jobClient, activatedJob);
     }
 
 
@@ -127,7 +141,7 @@ public class PdfExtractPagesWorker extends PdfWorker {
                     contextExecution);
 
         } catch (Exception e) {
-            logError("During extraction " + e.toString());
+            logError("During extraction " + e);
         } finally {
             if (sourceDocument != null)
                 try {

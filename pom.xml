@@ -35,6 +35,17 @@
             <version>2.9.0</version>
         </dependency>
 
+        <!-- Accept Camunda Connector -->
+        <dependency>
+            <groupId>io.camunda.connector</groupId>
+            <artifactId>connector-core</artifactId>
+            <version>0.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.camunda.connector</groupId>
+            <artifactId>connector-runtime-job-worker</artifactId>
+            <version>0.2.0-SNAPSHOT</version>
+        </dependency>
         <!-- JSON LocalDateTime -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -45,7 +56,7 @@
         <dependency>
             <groupId>org.camunda.community</groupId>
             <artifactId>zeebe-cherry-framework</artifactId>
-            <version>1.1.0</version>
+            <version>1.2.0</version>
         </dependency>
 
 

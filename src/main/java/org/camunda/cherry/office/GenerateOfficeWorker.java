@@ -13,9 +13,10 @@ import fr.opensagres.xdocreport.template.IContext;
 import fr.opensagres.xdocreport.template.TemplateEngineKind;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobClient;
-import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import org.camunda.cherry.definition.AbstractWorker;
+import org.camunda.cherry.definition.BpmnError;
+import org.camunda.cherry.definition.RunnerParameter;
 import org.camunda.cherry.definition.filevariable.FileVariable;
 import org.camunda.cherry.definition.filevariable.FileVariableFactory;
 import org.slf4j.Logger;
@@ -34,41 +35,34 @@ public class GenerateOfficeWorker extends AbstractWorker {
 
     public static final String BPMERROR_CONVERSION_ERROR = "CONVERSION_ERROR";
     public static final String BPMERROR_LOAD_FILE_ERROR = "LOAD_FILE_ERROR";
+    public static final String WORKERTYPE_OFFICE_GENERATION = "c-office-generation";
     private static final String INPUT_SOURCE_FILE = "sourceFile";
     private static final String INPUT_SOURCE_STORAGEDEFINITION = "sourceStorageDefinition";
     private static final String INPUT_DESTINATION_FILE_NAME = "destinationFileName";
     private static final String INPUT_DESTINATION_STORAGEDEFINITION = "destinationStorageDefinition";
     private static final String INPUT_VARIABLES = "variables";
     private static final String INPUT_VARIABLES_NAMES = "variablesName";
-
-
     private static final String OUTPUT_DESTINATION_FILE = "destinationFile";
-    public static final String WORKERTYPE_OFFICE_GENERATION = "c-office-generation";
-
     Logger logger = LoggerFactory.getLogger(GenerateOfficeWorker.class.getName());
 
     public GenerateOfficeWorker() {
         super(WORKERTYPE_OFFICE_GENERATION,
                 Arrays.asList(
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_SOURCE_FILE, "Source file", Object.class, Level.REQUIRED, "FileVariable for the file to convert"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_SOURCE_STORAGEDEFINITION, "Source Storage definition", String.class, FileVariableFactory.FileVariableStorage.JSON.toString(), Level.OPTIONAL, "Storage Definition use to access the file"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_FILE_NAME, "Destination file name", String.class, Level.REQUIRED, "Destination file name"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION, "Destination storage defintion", String.class, FileVariableFactory.FileVariableStorage.JSON.toString(), Level.OPTIONAL, "Storage Definition use to describe how to save the file"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_VARIABLES, "Dictionary variables for place holder", Map.class, Level.OPTIONAL, "Template document contains place holders. This is the dictionary which contains values for theses place holder"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_VARIABLES_NAMES, "Names of variables in the dictionary", String.class, Level.OPTIONAL, "Template document contains place holders. Here the list of variable to add in the dictionary for place holder")
+                        RunnerParameter.getInstance(INPUT_SOURCE_FILE, "Source file", Object.class, RunnerParameter.Level.REQUIRED, "FileVariable for the file to convert"),
+                        RunnerParameter.getInstance(INPUT_SOURCE_STORAGEDEFINITION, "Source Storage definition", String.class, FileVariableFactory.FileVariableStorage.JSON.toString(),
+                                RunnerParameter.Level.OPTIONAL, "Storage Definition use to access the file"),
+                        RunnerParameter.getInstance(INPUT_DESTINATION_FILE_NAME, "Destination file name", String.class, RunnerParameter.Level.REQUIRED, "Destination file name"),
+                        RunnerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION, "Destination storage defintion", String.class, FileVariableFactory.FileVariableStorage.JSON.toString(),
+                                RunnerParameter.Level.OPTIONAL, "Storage Definition use to describe how to save the file"),
+                        RunnerParameter.getInstance(INPUT_VARIABLES, "Dictionary variables for place holder", Map.class, RunnerParameter.Level.OPTIONAL, "Template document contains place holders. This is the dictionary which contains values for theses place holder"),
+                        RunnerParameter.getInstance(INPUT_VARIABLES_NAMES, "Names of variables in the dictionary", String.class, RunnerParameter.Level.OPTIONAL, "Template document contains place holders. Here the list of variable to add in the dictionary for place holder")
 
                 ),
                 Collections.singletonList(
-                        AbstractWorker.WorkerParameter.getInstance(OUTPUT_DESTINATION_FILE, "Destination file", Object.class, Level.REQUIRED, "FileVariable converted")
+                        RunnerParameter.getInstance(OUTPUT_DESTINATION_FILE, "Destination file", Object.class, RunnerParameter.Level.REQUIRED, "FileVariable converted")
                 ),
-                Arrays.asList(AbstractWorker.BpmnError.getInstance( BPMERROR_CONVERSION_ERROR, "Conversion error"),
-                        AbstractWorker.BpmnError.getInstance(BPMERROR_LOAD_FILE_ERROR, "Load file error")));
-    }
-
-    @Override
-    @ZeebeWorker(type = WORKERTYPE_OFFICE_GENERATION, autoComplete = true)
-    public void handleWorkerExecution(final JobClient jobClient, final ActivatedJob activatedJob) {
-        super.handleWorkerExecution(jobClient, activatedJob);
+                Arrays.asList(BpmnError.getInstance(BPMERROR_CONVERSION_ERROR, "Conversion error"),
+                        BpmnError.getInstance(BPMERROR_LOAD_FILE_ERROR, "Load file error")));
     }
 
 

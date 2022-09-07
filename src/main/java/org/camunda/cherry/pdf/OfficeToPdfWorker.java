@@ -14,9 +14,10 @@ import fr.opensagres.xdocreport.template.IContext;
 import fr.opensagres.xdocreport.template.TemplateEngineKind;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobClient;
-import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import org.camunda.cherry.definition.AbstractWorker;
+import org.camunda.cherry.definition.BpmnError;
+import org.camunda.cherry.definition.RunnerParameter;
 import org.camunda.cherry.definition.filevariable.FileVariable;
 import org.camunda.cherry.definition.filevariable.FileVariableFactory;
 import org.springframework.stereotype.Component;
@@ -32,31 +33,38 @@ public class OfficeToPdfWorker extends AbstractWorker {
 
     public static final String BPMERROR_CONVERSION_ERROR = "CONVERSION_ERROR";
     public static final String BPMERROR_LOAD_FILE_ERROR = "LOAD_FILE_ERROR";
+    public static final String WORKERTYPE_PDF_CONVERT_TO = "c-pdf-convert-to";
     private static final String INPUT_SOURCE_FILE = "sourceFile";
     private static final String INPUT_DESTINATION_FILE_NAME = "destinationFileName";
     private static final String INPUT_DESTINATION_STORAGEDEFINITION = "destinationStorageDefinition";
     private static final String OUTPUT_DESTINATION_FILE = "destinationFile";
-    public static final String WORKERTYPE_PDF_CONVERT_TO = "c-pdf-convert-to";
 
     public OfficeToPdfWorker() {
         super(WORKERTYPE_PDF_CONVERT_TO,
                 Arrays.asList(
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_SOURCE_FILE, "Source file", Object.class, Level.REQUIRED, "FileVariable for the file to convert"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_FILE_NAME, "Destination file name", String.class, Level.REQUIRED, "Destination file name"),
-                        AbstractWorker.WorkerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION, "Destination storage definitino", String.class, FileVariableFactory.FileVariableStorage.JSON.toString(), Level.OPTIONAL, "Storage Definition use to describe how to save the file")
+                        RunnerParameter.getInstance(INPUT_SOURCE_FILE,
+                                "Source file",
+                                Object.class,
+                                RunnerParameter.Level.REQUIRED,
+                                "FileVariable for the file to convert"),
+                        RunnerParameter.getInstance(INPUT_DESTINATION_FILE_NAME,
+                                "Destination file name",
+                                String.class,
+                                RunnerParameter.Level.REQUIRED,
+                                "Destination file name"),
+                        RunnerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION,
+                                "Destination storage definitino",
+                                String.class,
+                                FileVariableFactory.FileVariableStorage.JSON.toString(),
+                                RunnerParameter.Level.OPTIONAL,
+                                "Storage Definition use to describe how to save the file")
 
                 ),
                 Collections.singletonList(
-                        AbstractWorker.WorkerParameter.getInstance(OUTPUT_DESTINATION_FILE, "Destination file", Object.class, Level.REQUIRED, "FileVariable converted")
+                        RunnerParameter.getInstance(OUTPUT_DESTINATION_FILE, "Destination file", Object.class, RunnerParameter.Level.REQUIRED, "FileVariable converted")
                 ),
-                Arrays.asList(AbstractWorker.BpmnError.getInstance(BPMERROR_CONVERSION_ERROR, "Conversion error"),
-                        AbstractWorker.BpmnError.getInstance(BPMERROR_LOAD_FILE_ERROR, "Load File error")));
-    }
-
-    @Override
-    @ZeebeWorker(type = WORKERTYPE_PDF_CONVERT_TO, autoComplete = true)
-    public void handleWorkerExecution(final JobClient jobClient, final ActivatedJob activatedJob) {
-        super.handleWorkerExecution(jobClient, activatedJob);
+                Arrays.asList(BpmnError.getInstance(BPMERROR_CONVERSION_ERROR, "Conversion error"),
+                        BpmnError.getInstance(BPMERROR_LOAD_FILE_ERROR, "Load File error")));
     }
 
 
@@ -68,7 +76,7 @@ public class OfficeToPdfWorker extends AbstractWorker {
     @Override
     public void execute(final JobClient jobClient, final ActivatedJob activatedJob, ContextExecution contextExecution) {
 
-        FileVariable sourceFileVariable = getFileVariableValue(INPUT_SOURCE_FILE,  activatedJob);
+        FileVariable sourceFileVariable = getFileVariableValue(INPUT_SOURCE_FILE, activatedJob);
 
         String destinationFileName = getInputStringValue(INPUT_DESTINATION_FILE_NAME, null, activatedJob);
         String destinationStorageDefinition = getInputStringValue(INPUT_DESTINATION_STORAGEDEFINITION, null, activatedJob);
@@ -88,7 +96,7 @@ public class OfficeToPdfWorker extends AbstractWorker {
             final IContext context = report.createContext();
 
             final ByteArrayOutputStream out = new ByteArrayOutputStream();
-           
+
             report.convert(context,
                     Options.getTo(ConverterTypeTo.PDF),
                     out);

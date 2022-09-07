@@ -20,39 +20,6 @@ import java.io.IOException;
 
 public class PdfToolbox {
 
-    public enum TEXT_POSITION {TOP, CENTER, BOTTOM}
-
-    public static class WriterOption {
-        PDFont font = PDType1Font.HELVETICA_BOLD;
-        Color color = Color.gray;
-        TEXT_POSITION textPosition = TEXT_POSITION.TOP;
-        int degree = 0;
-
-        public static WriterOption getInstance() {
-            return new WriterOption();
-        }
-
-        public WriterOption setFont(PDFont font) {
-            this.font = font;
-            return this;
-        }
-
-        public WriterOption setColor(Color color) {
-            this.color = color;
-            return this;
-        }
-
-        public WriterOption setTextPosition(TEXT_POSITION textPosition) {
-            this.textPosition = textPosition;
-            return this;
-        }
-
-        public WriterOption setRotation(int degree) {
-            this.degree = degree;
-            return this;
-        }
-    }
-
     /**
      * Add a text in background on a page
      *
@@ -96,12 +63,12 @@ public class PdfToolbox {
         gs.setLineWidth(3f);
         contentStream.setGraphicsStateParameters(gs);
 
-        contentStream.setNonStrokingColor( writerOption.color);
-        contentStream.setStrokingColor( writerOption.color );
+        contentStream.setNonStrokingColor(writerOption.color);
+        contentStream.setStrokingColor(writerOption.color);
 
         contentStream.beginText();
 
-        if (writerOption.degree!=0 && writerOption.textPosition == TEXT_POSITION.CENTER) {
+        if (writerOption.degree != 0 && writerOption.textPosition == TEXT_POSITION.CENTER) {
             /*
              * Center of the page is (width/2, height / 2)
              * If we start the at this position, then the text will not be center.
@@ -115,10 +82,10 @@ public class PdfToolbox {
              *      use the cosinus( rotation )
              *
              */
-            int xText = (int) ( ((double)width) / 2.0 - Math.cos(Math.toRadians(writerOption.degree)) * ((double)stringWidth)/2.0);
-            int yText = (int) ( ((double)height) / 2.0 - Math.sin(Math.toRadians(writerOption.degree)) * ((double)stringWidth)/2.0);
+            int xText = (int) (((double) width) / 2.0 - Math.cos(Math.toRadians(writerOption.degree)) * ((double) stringWidth) / 2.0);
+            int yText = (int) (((double) height) / 2.0 - Math.sin(Math.toRadians(writerOption.degree)) * ((double) stringWidth) / 2.0);
 
-            Matrix matrix = Matrix.getRotateInstance(Math.toRadians(writerOption.degree), xText , yText);
+            Matrix matrix = Matrix.getRotateInstance(Math.toRadians(writerOption.degree), xText, yText);
 
 
             contentStream.setTextMatrix(matrix);
@@ -129,6 +96,39 @@ public class PdfToolbox {
         contentStream.showText(text);
         contentStream.endText();
         contentStream.close();
+    }
+
+    public enum TEXT_POSITION {TOP, CENTER, BOTTOM}
+
+    public static class WriterOption {
+        PDFont font = PDType1Font.HELVETICA_BOLD;
+        Color color = Color.gray;
+        TEXT_POSITION textPosition = TEXT_POSITION.TOP;
+        int degree = 0;
+
+        public static WriterOption getInstance() {
+            return new WriterOption();
+        }
+
+        public WriterOption setFont(PDFont font) {
+            this.font = font;
+            return this;
+        }
+
+        public WriterOption setColor(Color color) {
+            this.color = color;
+            return this;
+        }
+
+        public WriterOption setTextPosition(TEXT_POSITION textPosition) {
+            this.textPosition = textPosition;
+            return this;
+        }
+
+        public WriterOption setRotation(int degree) {
+            this.degree = degree;
+            return this;
+        }
     }
 
 

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0eb37hu" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.2.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.0.0">
+  <bpmn:process id="WatermarkPDFProcess" name="WatermarkPDF" isExecutable="true">
+    <bpmn:startEvent id="StartStartEvent" name="Start">
+      <bpmn:outgoing>Flow_1ux9lky</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="LoadPdfFileTask" name="Load Pdf file">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="c-files-load-from-disk" />
+        <zeebe:ioMapping>
+          <zeebe:input source="= &#34;D:\dev\intellij\community\zeebe-cherry-officepdf-workers\src\test\resources\pdf&#34;" target="folder" />
+          <zeebe:input source="= &#34;largeDocument.pdf&#34;" target="fileName" />
+          <zeebe:input source="= &#34;UNCHANGE&#34;" target="policy" />
+          <zeebe:input source="= &#34;TEMPFOLDER&#34;" target="storageDefinition" />
+          <zeebe:output source="= fileLoaded" target="cherrySourcePdfDocument" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ux9lky</bpmn:incoming>
+      <bpmn:outgoing>Flow_039khwb</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1ux9lky" sourceRef="StartStartEvent" targetRef="LoadPdfFileTask" />
+    <bpmn:sequenceFlow id="Flow_0p1344m" sourceRef="SaveWatermarkTask" targetRef="ReviewTask" />
+    <bpmn:endEvent id="FineEndEvent" name="Produced">
+      <bpmn:incoming>Flow_175ksxa</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_175ksxa" sourceRef="ReviewTask" targetRef="FineEndEvent" />
+    <bpmn:serviceTask id="SaveWatermarkTask" name="save Watermark">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:input source="=watermarkVar" target="sourceFile" />
+          <zeebe:input source="= &#34;D:\dev\intellij\community\zeebe-cherry-officepdf-workers\src\test\resources\pdf\output&#34;" target="folder" />
+          <zeebe:input source="= &#34;Watermark.pdf&#34;" target="fileName" />
+        </zeebe:ioMapping>
+        <zeebe:taskDefinition type="c-files-save-to-disk" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_01vryhr</bpmn:incoming>
+      <bpmn:outgoing>Flow_0p1344m</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="ReviewTask" name="review">
+      <bpmn:incoming>Flow_0p1344m</bpmn:incoming>
+      <bpmn:outgoing>Flow_175ksxa</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:boundaryEvent id="Event_0miquld" name="10 Mn" attachedToRef="ReviewTask">
+      <bpmn:outgoing>Flow_0lp2t66</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0ik7sja">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT10M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="TooLongEndEvent" name="Too long">
+      <bpmn:incoming>Flow_0lp2t66</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0lp2t66" sourceRef="Event_0miquld" targetRef="TooLongEndEvent" />
+    <bpmn:sequenceFlow id="Flow_039khwb" sourceRef="LoadPdfFileTask" targetRef="AddTopWatermarkInputTask" />
+    <bpmn:sequenceFlow id="Flow_0n7cm3f" sourceRef="AddCenterWatermarkTask" targetRef="AddBottomWatermarkTask" />
+    <bpmn:sequenceFlow id="Flow_01vryhr" sourceRef="AddBottomWatermarkTask" targetRef="SaveWatermarkTask" />
+    <bpmn:serviceTask id="AddBottomWatermarkTask" name="Add Bottom Watermark">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="c-pdf-watermark" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=&#34;watermark&#34;" target="destinationFileName" />
+          <zeebe:input source="=&#34;TEMPFOLDER&#34;" target="destinationStorageDefinition" />
+          <zeebe:input source="=watermarkVar" target="sourceFile" />
+          <zeebe:input source="=&#34;Bottom Watermark&#34;" target="watermark" />
+          <zeebe:input source="=&#34;BOTTOM&#34;" target="watermarkPosition" />
+          <zeebe:output source="=destinationFile" target="watermarkVar" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0n7cm3f</bpmn:incoming>
+      <bpmn:outgoing>Flow_01vryhr</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="AddCenterWatermarkTask" name="Add Center Watermark">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="c-pdf-watermark" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=&#34;watermark&#34;" target="destinationFileName" />
+          <zeebe:input source="=&#34;TEMPFOLDER&#34;" target="destinationStorageDefinition" />
+          <zeebe:input source="=watermarkVar" target="sourceFile" />
+          <zeebe:input source="=&#34;Big and long Center Watermark&#34;" target="watermark" />
+          <zeebe:input source="=&#34;CENTER&#34;" target="watermarkPosition" />
+          <zeebe:input source="=&#34;blue&#34;" target="watermarkColor" />
+          <zeebe:input source="=45" target="watermarkRotation" />
+          <zeebe:output source="=destinationFile" target="watermarkVar" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_17gitx9</bpmn:incoming>
+      <bpmn:outgoing>Flow_0n7cm3f</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_17gitx9" sourceRef="AddTopWatermarkInputTask" targetRef="AddCenterWatermarkTask" />
+    <bpmn:serviceTask id="AddTopWatermarkInputTask" name="Add Top Watermark input">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:input source="= &#34;watermark&#34;" target="destinationFileName" />
+          <zeebe:input source="=&#34;TEMPFOLDER&#34;" target="destinationStorageDefinition" />
+          <zeebe:input source="=cherrySourcePdfDocument" target="sourceFile" />
+          <zeebe:input source="=&#34;Top Watermark&#34;" target="watermark" />
+          <zeebe:input source="=&#34;TOP&#34;" target="watermarkPosition" />
+          <zeebe:output source="=destinationFile" target="watermarkVar" />
+        </zeebe:ioMapping>
+        <zeebe:taskDefinition type="c-pdf-watermark" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_039khwb</bpmn:incoming>
+      <bpmn:outgoing>Flow_17gitx9</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="WatermarkPDFProcess">
+      <bpmndi:BPMNEdge id="Flow_17gitx9_di" bpmnElement="Flow_17gitx9">
+        <di:waypoint x="470" y="160" />
+        <di:waypoint x="470" y="210" />
+        <di:waypoint x="500" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01vryhr_di" bpmnElement="Flow_01vryhr">
+        <di:waypoint x="650" y="300" />
+        <di:waypoint x="710" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0n7cm3f_di" bpmnElement="Flow_0n7cm3f">
+        <di:waypoint x="520" y="250" />
+        <di:waypoint x="520" y="300" />
+        <di:waypoint x="550" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_039khwb_di" bpmnElement="Flow_039khwb">
+        <di:waypoint x="390" y="117" />
+        <di:waypoint x="440" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lp2t66_di" bpmnElement="Flow_0lp2t66">
+        <di:waypoint x="930" y="358" />
+        <di:waypoint x="930" y="400" />
+        <di:waypoint x="972" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_175ksxa_di" bpmnElement="Flow_175ksxa">
+        <di:waypoint x="970" y="300" />
+        <di:waypoint x="1022" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0p1344m_di" bpmnElement="Flow_0p1344m">
+        <di:waypoint x="810" y="300" />
+        <di:waypoint x="870" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ux9lky_di" bpmnElement="Flow_1ux9lky">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="290" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartStartEvent">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="186" y="142" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0t5lxha_di" bpmnElement="LoadPdfFileTask">
+        <dc:Bounds x="290" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0c8snmz_di" bpmnElement="FineEndEvent">
+        <dc:Bounds x="1022" y="282" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1016" y="325" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0p98lqk_di" bpmnElement="SaveWatermarkTask">
+        <dc:Bounds x="710" y="260" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1mtgjmo_di" bpmnElement="ReviewTask">
+        <dc:Bounds x="870" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_02lymlo_di" bpmnElement="TooLongEndEvent">
+        <dc:Bounds x="972" y="382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="970" y="425" width="42" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_005h2kw_di" bpmnElement="AddBottomWatermarkTask">
+        <dc:Bounds x="550" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0thc40l_di" bpmnElement="AddCenterWatermarkTask">
+        <dc:Bounds x="500" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_14n3n8y_di" bpmnElement="AddTopWatermarkInputTask">
+        <dc:Bounds x="440" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0x7axdw_di" bpmnElement="Event_0miquld">
+        <dc:Bounds x="912" y="322" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="934" y="365" width="31" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

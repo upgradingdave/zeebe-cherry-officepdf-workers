@@ -20,6 +20,7 @@ import org.camunda.cherry.definition.BpmnError;
 import org.camunda.cherry.definition.RunnerParameter;
 import org.camunda.cherry.definition.filevariable.FileVariable;
 import org.camunda.cherry.definition.filevariable.FileVariableFactory;
+import org.camunda.cherry.definition.filevariable.StorageDefinition;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
@@ -56,7 +57,7 @@ public class OfficeToPdfWorker extends AbstractWorker {
                         RunnerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION,
                                 "Destination storage definitino",
                                 String.class,
-                                FileVariableFactory.FileVariableStorage.JSON.toString(),
+                                StorageDefinition.StorageDefinitionType.JSON.toString(),
                                 RunnerParameter.Level.OPTIONAL,
                                 "Storage Definition use to describe how to save the file")
 
@@ -93,7 +94,8 @@ public class OfficeToPdfWorker extends AbstractWorker {
         FileVariable sourceFileVariable = getFileVariableValue(INPUT_SOURCE_FILE, activatedJob);
 
         String destinationFileName = getInputStringValue(INPUT_DESTINATION_FILE_NAME, null, activatedJob);
-        String destinationStorageDefinition = getInputStringValue(INPUT_DESTINATION_STORAGEDEFINITION, null, activatedJob);
+        String destinationStorageDefinitionSt = getInputStringValue(INPUT_DESTINATION_STORAGEDEFINITION, null, activatedJob);
+        StorageDefinition destinationStorageDefinition = StorageDefinition.getFromString(destinationStorageDefinitionSt);
 
         if (sourceFileVariable == null || sourceFileVariable.value == null) {
             throw new ZeebeBpmnError(BPMERROR_LOAD_FILE_ERROR, "Worker [" + getName() + "] cannot read file[" + INPUT_SOURCE_FILE + "]");
@@ -117,7 +119,7 @@ public class OfficeToPdfWorker extends AbstractWorker {
             FileVariable fileVariableOut = new FileVariable();
             fileVariableOut.value = out.toByteArray();
             fileVariableOut.name = destinationFileName;
-            setFileVariableValue(OUTPUT_DESTINATION_FILE, destinationStorageDefinition, fileVariableOut, contextExecution);
+            setOutputFileVariableValue(OUTPUT_DESTINATION_FILE, destinationStorageDefinition, fileVariableOut, contextExecution);
 
         } catch (Exception e) {
             throw new ZeebeBpmnError(BPMERROR_CONVERSION_ERROR, "Worker [" + getName() + "] cannot convert file[" + sourceFileVariable.name + "] : " + e);

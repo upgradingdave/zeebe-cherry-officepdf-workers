@@ -14,6 +14,7 @@ import org.camunda.cherry.definition.BpmnError;
 import org.camunda.cherry.definition.RunnerParameter;
 import org.camunda.cherry.definition.filevariable.FileVariable;
 import org.camunda.cherry.definition.filevariable.FileVariableFactory;
+import org.camunda.cherry.definition.filevariable.StorageDefinition;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -57,7 +58,7 @@ public class PdfExtractPagesWorker extends PdfWorker {
                         RunnerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION,
                                 "Destination Storage definition",
                                 String.class,
-                                FileVariableFactory.FileVariableStorage.JSON.toString(),
+                                StorageDefinition.StorageDefinitionType.JSON.toString(),
                                 RunnerParameter.Level.OPTIONAL,
                                 "Storage Definition use to describe how to save the file")
 
@@ -101,7 +102,8 @@ public class PdfExtractPagesWorker extends PdfWorker {
         FileVariable sourceFileVariable = getFileVariableValue(INPUT_SOURCE_FILE, activatedJob);
 
         String destinationFileName = getInputStringValue(INPUT_DESTINATION_FILE_NAME, null, activatedJob);
-        String destinationStorageDefinition = getInputStringValue(INPUT_DESTINATION_STORAGEDEFINITION, null, activatedJob);
+        String destinationStorageDefinitionSt = getInputStringValue(INPUT_DESTINATION_STORAGEDEFINITION, null, activatedJob);
+        StorageDefinition destinationStorageDefinition = StorageDefinition.getFromString(destinationStorageDefinitionSt);
 
         if (sourceFileVariable == null || sourceFileVariable.value == null) {
             throw new ZeebeBpmnError(BPMERROR_LOAD_FILE_ERROR, "Worker [" + getName() + "] cannot read file[" + INPUT_SOURCE_FILE + "]");

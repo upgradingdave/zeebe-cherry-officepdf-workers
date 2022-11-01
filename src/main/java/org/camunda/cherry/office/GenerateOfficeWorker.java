@@ -19,6 +19,7 @@ import org.camunda.cherry.definition.BpmnError;
 import org.camunda.cherry.definition.RunnerParameter;
 import org.camunda.cherry.definition.filevariable.FileVariable;
 import org.camunda.cherry.definition.filevariable.FileVariableFactory;
+import org.camunda.cherry.definition.filevariable.StorageDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -51,10 +52,10 @@ public class GenerateOfficeWorker extends AbstractWorker {
         super(WORKERTYPE_OFFICE_GENERATION,
                 Arrays.asList(
                         RunnerParameter.getInstance(INPUT_SOURCE_FILE, "Source file", Object.class, RunnerParameter.Level.REQUIRED, "FileVariable for the file to convert"),
-                        RunnerParameter.getInstance(INPUT_SOURCE_STORAGEDEFINITION, "Source Storage definition", String.class, FileVariableFactory.FileVariableStorage.JSON.toString(),
+                        RunnerParameter.getInstance(INPUT_SOURCE_STORAGEDEFINITION, "Source Storage definition", String.class, StorageDefinition.StorageDefinitionType.JSON.toString(),
                                 RunnerParameter.Level.OPTIONAL, "Storage Definition use to access the file"),
                         RunnerParameter.getInstance(INPUT_DESTINATION_FILE_NAME, "Destination file name", String.class, RunnerParameter.Level.REQUIRED, "Destination file name"),
-                        RunnerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION, "Destination storage defintion", String.class, FileVariableFactory.FileVariableStorage.JSON.toString(),
+                        RunnerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION, "Destination storage defintion", String.class, StorageDefinition.StorageDefinitionType.JSON.toString(),
                                 RunnerParameter.Level.OPTIONAL, "Storage Definition use to describe how to save the file"),
                         RunnerParameter.getInstance(INPUT_VARIABLES, "Dictionary variables for place holder", Map.class, RunnerParameter.Level.OPTIONAL, "Template document contains place holders. This is the dictionary which contains values for theses place holder"),
                         RunnerParameter.getInstance(INPUT_VARIABLES_NAMES, "Names of variables in the dictionary", String.class, RunnerParameter.Level.OPTIONAL, "Template document contains place holders. Here the list of variable to add in the dictionary for place holder")
@@ -69,7 +70,7 @@ public class GenerateOfficeWorker extends AbstractWorker {
 
     @Override
     public String getName() {
-        return "Office to PDF";
+        return "Office Generation";
     }
 
     @Override
@@ -88,13 +89,14 @@ public class GenerateOfficeWorker extends AbstractWorker {
         FileVariable sourceFileVariable = getFileVariableValue(INPUT_SOURCE_FILE, activatedJob);
 
         String destinationFileName = getInputStringValue(INPUT_DESTINATION_FILE_NAME, null, activatedJob);
-        String destinationStorageDefinition = getInputStringValue(INPUT_DESTINATION_STORAGEDEFINITION, null, activatedJob);
+        String destinationStorageDefinitionSt = getInputStringValue(INPUT_DESTINATION_STORAGEDEFINITION, null, activatedJob);
+        StorageDefinition destinationStorageDefinition = StorageDefinition.getFromString(destinationStorageDefinitionSt);
 
         if (sourceFileVariable == null || sourceFileVariable.value == null) {
             throw new ZeebeBpmnError(BPMERROR_LOAD_FILE_ERROR, "Worker [" + getName() + "] cannot read file[" + sourceStorageDefinition + "]");
         }
 
-        Map<String, Object> variables = getInputMapValue(INPUT_VARIABLES, Collections.emptyMap(), activatedJob);
+        Map<String, Object> variables = (Map<String, Object>) getInputMapValue(INPUT_VARIABLES, Collections.emptyMap(), activatedJob);
         String listVariablesToAdd = getInputStringValue(INPUT_VARIABLES_NAMES, "", activatedJob);
 
         // get the file
@@ -126,7 +128,7 @@ public class GenerateOfficeWorker extends AbstractWorker {
             FileVariable fileVariableOut = new FileVariable();
             fileVariableOut.value = outDoc.toByteArray();
             fileVariableOut.name = destinationFileName;
-            setFileVariableValue(OUTPUT_DESTINATION_FILE, destinationStorageDefinition, fileVariableOut, contextExecution);
+            setOutputFileVariableValue(OUTPUT_DESTINATION_FILE, destinationStorageDefinition, fileVariableOut, contextExecution);
         } catch (Exception e) {
             throw new ZeebeBpmnError(BPMERROR_CONVERSION_ERROR, "Worker [" + getName() + "] cannot generate file[" + sourceFileVariable.name + "] : " + e);
         }

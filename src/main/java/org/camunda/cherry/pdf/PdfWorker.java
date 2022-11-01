@@ -12,6 +12,7 @@ import org.camunda.cherry.definition.AbstractWorker;
 import org.camunda.cherry.definition.BpmnError;
 import org.camunda.cherry.definition.RunnerParameter;
 import org.camunda.cherry.definition.filevariable.FileVariable;
+import org.camunda.cherry.definition.filevariable.StorageDefinition;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -60,7 +61,7 @@ public abstract class PdfWorker extends AbstractWorker {
     protected void saveOutputPdfDocument(PDDocument pdDocument,
                                          String fileName,
                                          String outputParameterName,
-                                         String destinationStorageDefinition,
+                                         StorageDefinition destinationStorageDefinition,
                                          AbstractWorker.ContextExecution contextExecution) throws ZeebeBpmnError {
         FileVariable fileVariableOut = new FileVariable();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -70,7 +71,7 @@ public abstract class PdfWorker extends AbstractWorker {
             fileVariableOut.value = byteArrayOutputStream.toByteArray();
             fileVariableOut.name = fileName;
 
-            setFileVariableValue(outputParameterName, destinationStorageDefinition, fileVariableOut, contextExecution);
+            setOutputFileVariableValue(outputParameterName, destinationStorageDefinition, fileVariableOut, contextExecution);
         } catch (Exception e) {
             throw new ZeebeBpmnError(BPMERROR_SAVE_ERROR, "Worker [" + getName() + "] cannot save destination[" + fileName + "] : " + e);
         }

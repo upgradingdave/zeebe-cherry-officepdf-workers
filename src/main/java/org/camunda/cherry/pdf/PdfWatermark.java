@@ -14,6 +14,7 @@ import org.camunda.cherry.definition.BpmnError;
 import org.camunda.cherry.definition.RunnerParameter;
 import org.camunda.cherry.definition.filevariable.FileVariable;
 import org.camunda.cherry.definition.filevariable.FileVariableFactory;
+import org.camunda.cherry.definition.filevariable.StorageDefinition;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
@@ -83,7 +84,7 @@ public class PdfWatermark extends PdfWorker {
                         RunnerParameter.getInstance(INPUT_WATERMARK_ROTATION, "Rotation (degree)", Integer.class, RunnerParameter.Level.OPTIONAL, "Rotation (0-360)"),
 
                         RunnerParameter.getInstance(INPUT_DESTINATION_FILE_NAME, "Destination file name", String.class, RunnerParameter.Level.REQUIRED, "Destination file name"),
-                        RunnerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION, "Storage definition", String.class, FileVariableFactory.FileVariableStorage.JSON.toString(), RunnerParameter.Level.OPTIONAL, "Storage Definition use to describe how to save the file")
+                        RunnerParameter.getInstance(INPUT_DESTINATION_STORAGEDEFINITION, "Storage definition", String.class, StorageDefinition.StorageDefinitionType.JSON.toString(), RunnerParameter.Level.OPTIONAL, "Storage Definition use to describe how to save the file")
 
 
                 ),
@@ -125,7 +126,8 @@ public class PdfWatermark extends PdfWorker {
         FileVariable sourceFileVariable = getFileVariableValue(INPUT_SOURCE_FILE, activatedJob);
 
         String destinationFileName = getInputStringValue(INPUT_DESTINATION_FILE_NAME, null, activatedJob);
-        String destinationStorageDefinition = getInputStringValue(INPUT_DESTINATION_STORAGEDEFINITION, null, activatedJob);
+        String destinationStorageDefinitionSt = getInputStringValue(INPUT_DESTINATION_STORAGEDEFINITION, null, activatedJob);
+        StorageDefinition destinationStorageDefinition = StorageDefinition.getFromString(destinationStorageDefinitionSt);
 
         if (sourceFileVariable == null || sourceFileVariable.value == null) {
             throw new ZeebeBpmnError(BPMERROR_LOAD_FILE_ERROR, "Worker [" + getName() + "] cannot read file[" + INPUT_SOURCE_FILE + "]");

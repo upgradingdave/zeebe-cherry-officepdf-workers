@@ -6,15 +6,30 @@
 
     <groupId>org.camunda.community</groupId>
     <artifactId>zeebe-cherry-officepdf-workers</artifactId>
-    <version>1.0.0</version>
+    <version>${cherryofficepdf}</version>
+
+
 
     <properties>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.source>17</maven.compiler.source>
-        <zeebe.version>8.0.3</zeebe.version>
+        <cherryofficepdf.version>1.0.0</cherryofficepdf.version>
+        <zeebe.version>8.1.0</zeebe.version>
+        <cherry.version>1.3.2</cherry.version>
         <junit.jupiter.version>5.9.0</junit.jupiter.version>
         <opensagres.version>2.0.3</opensagres.version>
+
+        <java.version>17</java.version>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <spring.boot.version>2.7.5</spring.boot.version>
+
     </properties>
+
+    <!-- Inherit defaults from Spring Boot -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.5</version>
+    </parent>
 
     <dependencies>
         <dependency>
@@ -29,23 +44,29 @@
             <version>${zeebe.version}</version>
         </dependency>
 
+        <!-- Accept Camunda Connector -->
+        <dependency>
+            <groupId>io.camunda.connector</groupId>
+            <artifactId>connector-core</artifactId>
+            <version>0.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.camunda.connector</groupId>
+            <artifactId>connector-runtime-job-worker</artifactId>
+            <version>0.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.camunda.connector</groupId>
+            <artifactId>connector-validation</artifactId>
+            <version>0.2.2</version>
+        </dependency>
+
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.9.0</version>
         </dependency>
 
-        <!-- Accept Camunda Connector -->
-        <dependency>
-            <groupId>io.camunda.connector</groupId>
-            <artifactId>connector-core</artifactId>
-            <version>0.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.camunda.connector</groupId>
-            <artifactId>connector-runtime-job-worker</artifactId>
-            <version>0.2.0-SNAPSHOT</version>
-        </dependency>
         <!-- JSON LocalDateTime -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -56,7 +77,7 @@
         <dependency>
             <groupId>org.camunda.community</groupId>
             <artifactId>zeebe-cherry-framework</artifactId>
-            <version>1.2.0</version>
+            <version>${cherry.version}</version>
         </dependency>
 
 
@@ -167,6 +188,28 @@
                     <target>11</target>
                 </configuration>
             </plugin>
+            <!-- allow mvn run -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>org.camunda.cherry.CherryApplication</mainClass>
+                </configuration>
+            </plugin>
+
+
+            <!-- visit https://cloud.google.com/appengine/docs/legacy/standard/java/using-maven -->
+            <!-- execute mvn package appengine:deploy -->
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>appengine-maven-plugin</artifactId>
+                <version>2.4.4</version>
+                <configuration>
+                    <projectId>CherryFramework</projectId>
+                    <version>${cherryofficepdf}</version>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 

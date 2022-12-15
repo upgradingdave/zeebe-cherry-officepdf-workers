@@ -4,15 +4,15 @@
 /*                                                                      */
 /*  Super class for all PDF Worker, to offer service                    */
 /* ******************************************************************** */
-package org.camunda.cherry.pdf;
+package io.camunda.cherry.pdf;
 
+import io.camunda.cherry.definition.AbstractWorker;
+import io.camunda.cherry.definition.BpmnError;
+import io.camunda.cherry.definition.RunnerParameter;
+import io.camunda.file.storage.FileVariable;
+import io.camunda.file.storage.StorageDefinition;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.camunda.cherry.definition.AbstractWorker;
-import org.camunda.cherry.definition.BpmnError;
-import org.camunda.cherry.definition.RunnerParameter;
-import org.camunda.cherry.definition.filevariable.FileVariable;
-import org.camunda.cherry.definition.filevariable.StorageDefinition;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -39,10 +39,10 @@ public abstract class PdfWorker extends AbstractWorker {
     protected PDDocument loadPdfDocument(FileVariable sourceFileVariable) throws ZeebeBpmnError{
         PDDocument sourceDocument;
         try {
-            sourceDocument = PDDocument.load(sourceFileVariable.value);
+            sourceDocument = PDDocument.load(sourceFileVariable.getValue());
 
         } catch (Exception e) {
-            throw new ZeebeBpmnError(BPMERROR_LOAD_FILE_ERROR, "Worker [" + getName() + "] Can't load document [" + sourceFileVariable.name + "]");
+            throw new ZeebeBpmnError(BPMERROR_LOAD_FILE_ERROR, "Worker [" + getName() + "] Can't load document [" + sourceFileVariable.getName() + "]");
         }
         if (sourceDocument.isEncrypted()) {
             throw new ZeebeBpmnError(BPMERROR_ENCRYPTED_NOT_SUPPORTED, "Worker [" + getName() + "] Document is encrypted");
@@ -68,8 +68,8 @@ public abstract class PdfWorker extends AbstractWorker {
         try {
             pdDocument.save(byteArrayOutputStream);
 
-            fileVariableOut.value = byteArrayOutputStream.toByteArray();
-            fileVariableOut.name = fileName;
+            fileVariableOut.setValue( byteArrayOutputStream.toByteArray());
+            fileVariableOut.setName( fileName);
 
             setOutputFileVariableValue(outputParameterName, destinationStorageDefinition, fileVariableOut, contextExecution);
         } catch (Exception e) {
@@ -79,7 +79,7 @@ public abstract class PdfWorker extends AbstractWorker {
 
     /**
      * Default logo for a Pdf worker
-     * @return
+     * @return tje logo
      */
     @Override
 	public String getLogo() {

@@ -4,7 +4,7 @@
 /*                                                                      */
 /*  Collection of tool around the PDF library                           */
 /* ******************************************************************** */
-package org.camunda.cherry.pdf;
+package io.camunda.cherry.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -42,18 +42,11 @@ public class PdfToolbox {
 
         float x = (width / 2) - (stringWidth / 2);
 
-        float y = height - 25;
-        switch (writerOption.textPosition) {
-            case TOP:
-                y = height - 25;
-                break;
-            case CENTER:
-                y = height / 2;
-                break;
-            case BOTTOM:
-                y = 5;
-                break;
-        }
+        float y = switch (writerOption.textPosition) {
+            case TOP -> height - 25;
+            case CENTER -> height / 2;
+            case BOTTOM -> 5;
+        };
 
         contentStream.setFont(writerOption.font, fontHeight);
 

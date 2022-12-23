@@ -29,9 +29,8 @@ public class OfficeToPdfFacade extends AbstractConnector {
             RunnerParameter.getInstance(OfficeToPdfInput.INPUT_DESTINATION_FILE_NAME, "Destination file name",
                 String.class, RunnerParameter.Level.REQUIRED, "Destination file name"),
             RunnerParameter.getInstance(OfficeToPdfInput.INPUT_DESTINATION_STORAGEDEFINITION,
-                "Destination storage definition",
-                String.class, null,
-                RunnerParameter.Level.OPTIONAL, "Storage Definition use to describe how to save the file. If not provided, the Source file's storage definition is used.")
+                "Destination storage definition", String.class, null, RunnerParameter.Level.OPTIONAL,
+                "Storage Definition use to describe how to save the file. If not provided, the Source file's storage definition is used.")
 
         ),
         // The connector Input class
@@ -39,8 +38,7 @@ public class OfficeToPdfFacade extends AbstractConnector {
 
         // List of Output parameters
         Collections.singletonList(
-            RunnerParameter.getInstance(OfficeToPdfOutput.OUTPUT_PDF_FILE_VARIABLE,
-                "Destination file", Object.class,
+            RunnerParameter.getInstance(OfficeToPdfOutput.OUTPUT_PDF_FILE_VARIABLE, "Destination file", Object.class,
                 RunnerParameter.Level.REQUIRED, "FileVariable converted (a File Variable Reference)")),
         // The connector Output class
         OfficeToPdfOutput.class,

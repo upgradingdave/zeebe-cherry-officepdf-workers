@@ -18,14 +18,13 @@
     <connector-validation.version>0.3.0</connector-validation.version>
 
     <!-- 2.1 contains the file.storage library -->
-    <cherry.version>2.1.0</cherry.version>
+    <cherry.version>2.2.1</cherry.version>
     <cherryofficepdf.version>1.0.0</cherryofficepdf.version>
 
     <junit.jupiter.version>5.9.1</junit.jupiter.version>
     <opensagres.version>2.0.3</opensagres.version>
     <spring.boot.version>2.7.4</spring.boot.version>
   </properties>
-
 
 
   <!-- Push the library to Maven -->
@@ -61,7 +60,6 @@
       <artifactId>zeebe-client-java</artifactId>
       <version>${zeebe.version}</version>
     </dependency>
-
 
 
     <!-- Accept Camunda Connector -->
@@ -154,6 +152,12 @@
       <artifactId>office-to-pdf</artifactId>
       <version>1.0.0</version>
     </dependency>
+    <dependency>
+      <groupId>io.camunda.connector</groupId>
+      <artifactId>pdf</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+
 
     <!-- Convert to PDF -->
     <!-- https://mvnrepository.com/artifact/fr.opensagres.xdocreport/fr.opensagres.xdocreport.document -->

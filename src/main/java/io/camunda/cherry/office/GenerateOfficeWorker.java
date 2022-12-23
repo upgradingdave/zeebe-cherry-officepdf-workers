@@ -132,15 +132,15 @@ public class GenerateOfficeWorker extends AbstractWorker {
       report.process(context, outDoc);
 
       FileVariable fileVariableOut = new FileVariable();
-      fileVariableOut.setValue( outDoc.toByteArray());
-      fileVariableOut.setName( destinationFileName);
+      fileVariableOut.setValue(outDoc.toByteArray());
+      fileVariableOut.setName(destinationFileName);
       setOutputFileVariableValue(OUTPUT_DESTINATION_FILE, destinationStorageDefinition, fileVariableOut,
           contextExecution);
     } catch (Exception e) {
-      throw new ZeebeBpmnError(BPMERROR_CONVERSION_ERROR,
-          "Worker [" + getName() + "] cannot generate file["
-              + (sourceFileVariable==null? "null" : sourceFileVariable.getName())
-              + "] : " + e);
+      throw new ZeebeBpmnError(BPMERROR_CONVERSION_ERROR, "Worker [" + getName() + "] cannot generate file[" + (
+          sourceFileVariable == null ?
+              "null" :
+              sourceFileVariable.getName()) + "] : " + e);
     }
 
   }

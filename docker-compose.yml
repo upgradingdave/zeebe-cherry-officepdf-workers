@@ -1,0 +1,11 @@
+version: "3"
+services:
+
+
+  cherry-officepdf:
+    image: "zeebe-cherry-officepdf:1.0.0"
+    container_name: "Cherry-officepdf"
+    ports:
+      - "9081:9081"
+    environment:
+      - SERVER_PORT2=8080

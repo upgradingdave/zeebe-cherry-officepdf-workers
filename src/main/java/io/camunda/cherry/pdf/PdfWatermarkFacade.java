@@ -10,7 +10,7 @@ import io.camunda.connector.pdf.toolbox.PdfToolbox;
 import io.camunda.connector.pdf.watermark.PdfWatermarkFunction;
 import io.camunda.connector.pdf.watermark.PdfWatermarkInput;
 import io.camunda.connector.pdf.watermark.PdfWatermarkOutput;
-import io.camunda.file.storage.StorageDefinition;
+import io.camunda.filestorage.StorageDefinition;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import org.springframework.stereotype.Component;
 
@@ -39,19 +39,19 @@ public class PdfWatermarkFacade extends AbstractConnector {
             .addChoice("BOTTOM", PdfToolbox.TEXT_POSITION.BOTTOM.toString()),
         RunnerParameter.getInstance(PdfWatermarkInput.INPUT_WATERMARK_COLOR, "Color", String.class,
                 RunnerParameter.Level.OPTIONAL, "Color to display the watermark")
-            .addChoice("RED", "red")
-            .addChoice("GREEN", "green")
-            .addChoice("BLACK", "black")
-            .addChoice("BLUE", "blue")
-            .addChoice("CYAN", "cyan")
-            .addChoice("GRAY", "gray")
-            .addChoice("DARKGRAY", "darkGray")
-            .addChoice("LIGHTGRAY", "lightGray")
-            .addChoice("MAJENTA", "magenta")
-            .addChoice("ORANGE", "orange")
-            .addChoice("PINK", "pink")
-            .addChoice("WHITE", "white")
-            .addChoice("YELLOW", "yellow"),
+            .addChoice("RED", PdfWatermarkFunction.COLOR_RED)
+            .addChoice("GREEN", PdfWatermarkFunction.COLOR_GREEN)
+            .addChoice("BLACK", PdfWatermarkFunction.COLOR_BLACK)
+            .addChoice("BLUE", PdfWatermarkFunction.COLOR_BLUE)
+            .addChoice("CYAN", PdfWatermarkFunction.COLOR_CYAN)
+            .addChoice("GRAY", PdfWatermarkFunction.COLOR_GRAY)
+            .addChoice("DARKGRAY", PdfWatermarkFunction.COLOR_DARKGRAY)
+            .addChoice("LIGHTGRAY", PdfWatermarkFunction.COLOR_LIGHTGRAY)
+            .addChoice("MAJENTA", PdfWatermarkFunction.COLOR_MAGENTA)
+            .addChoice("ORANGE", PdfWatermarkFunction.COLOR_ORANGE)
+            .addChoice("PINK", PdfWatermarkFunction.COLOR_PINK)
+            .addChoice("WHITE", PdfWatermarkFunction.COLOR_WHITE)
+            .addChoice("YELLOW", PdfWatermarkFunction.COLOR_YELLOW),
         RunnerParameter.getInstance(PdfWatermarkInput.INPUT_WATERMARK_ROTATION, "Rotation (degree)", Integer.class,
             RunnerParameter.Level.OPTIONAL, "Rotation (0-360)"),
 
@@ -64,8 +64,8 @@ public class PdfWatermarkFacade extends AbstractConnector {
     ), PdfWatermarkInput.class, Collections.singletonList(
         RunnerParameter.getInstance(PdfWatermarkOutput.OUTPUT_DESTINATION_FILE, "Output destination file", Object.class,
             RunnerParameter.Level.REQUIRED, "FileVariable converted")), PdfWatermarkOutput.class, Arrays.asList(
-        BpmnError.getInstance(PdfToolbox.BPMERROR_ENCRYPTED_NOT_SUPPORTED, "PDF Encripted file not supported"),
-        BpmnError.getInstance(PdfToolbox.BPMERROR_LOAD_FILE_ERROR, "Load file error"),
+        BpmnError.getInstance(PdfToolbox.ERROR_ENCRYPTED_PDF_NOT_SUPPORTED, "PDF Encripted file not supported"),
+        BpmnError.getInstance(PdfToolbox.ERROR_LOAD_ERROR, "Load file error"),
         BpmnError.getInstance(PdfWatermarkFunction.ERROR_INVALID_COLOR, "Invalid color"),
         BpmnError.getInstance(PdfMergeDocumentFunction.ERROR_DEFINITION_ERROR, "Correct the definition"),
         BpmnError.getInstance(PdfWatermarkFunction.ERROR_OPERATION_ERROR, "Operation error")));
@@ -91,7 +91,7 @@ public class PdfWatermarkFacade extends AbstractConnector {
   }
 
   @Override
-  public PdfWatermarkOutput execute(OutboundConnectorContext context) throws Exception {
+  public PdfWatermarkOutput execute(OutboundConnectorContext context) throws ZeebeBpmnError {
     PdfWatermarkFunction pdfWatermarkFunction = new PdfWatermarkFunction();
     try {
       return pdfWatermarkFunction.execute(context);
@@ -99,4 +99,8 @@ public class PdfWatermarkFacade extends AbstractConnector {
       throw new ZeebeBpmnError(e.getErrorCode(), e.getMessage());
     }
   }
+
+
 }
+
+

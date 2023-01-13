@@ -37,8 +37,8 @@ public class PdfMergeDocumentFacade extends AbstractConnector {
         ), PdfMergeDocumentInput.class, Collections.singletonList(
             RunnerParameter.getInstance(PdfMergeDocumentOutput.OUTPUT_DESTINATION_FILE, "Destination variable name",
                 Object.class, RunnerParameter.Level.REQUIRED, "FileVariable converted")), PdfExtractPagesOutput.class,
-        Arrays.asList(BpmnError.getInstance(PdfToolbox.BPMERROR_ENCRYPTED_NOT_SUPPORTED, "PDF Encrypted not supported"),
-            BpmnError.getInstance(PdfToolbox.BPMERROR_LOAD_FILE_ERROR, "Load file error"),
+        Arrays.asList(BpmnError.getInstance(PdfToolbox.ERROR_ENCRYPTED_PDF_NOT_SUPPORTED, "PDF Encrypted not supported"),
+            BpmnError.getInstance(PdfToolbox.ERROR_LOAD_ERROR, "Load file error"),
             BpmnError.getInstance(PdfMergeDocumentFunction.ERROR_DEFINITION_ERROR, "Correct the definition")));
   }
 

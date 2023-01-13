@@ -10,7 +10,7 @@
       <bpmn:incoming>Flow_17g7e83</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_175ksxa" sourceRef="ReviewTask" targetRef="Activity_0z87n1w" />
-    <bpmn:userTask id="ReviewTask" name="review">
+    <bpmn:userTask id="ReviewTask" name="review file merged">
       <bpmn:incoming>Flow_0p1344m</bpmn:incoming>
       <bpmn:outgoing>Flow_175ksxa</bpmn:outgoing>
     </bpmn:userTask>
@@ -71,9 +71,9 @@
         <zeebe:ioMapping>
           <zeebe:input source="false" target="destinationStorageDefinition_optional" />
           <zeebe:input source="true" target="destinationFile_optional" />
-          <zeebe:input source="&#34;fileMerged.pdf&#34;" target="destinationFileName" />
           <zeebe:input source="=fileLoaded2" target="fileToAdd" />
           <zeebe:input source="=fileLoaded1" target="sourceFile" />
+          <zeebe:input source="fileMerged.pdf" target="destinationFileName" />
           <zeebe:output source="= result.destinationFile" target="fileMerged" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
@@ -160,6 +160,7 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1mtgjmo_di" bpmnElement="ReviewTask">
         <dc:Bounds x="840" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0g7hzkm_di" bpmnElement="LoadPdfFileTask">
         <dc:Bounds x="290" y="77" width="100" height="80" />

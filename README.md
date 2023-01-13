@@ -88,3 +88,5 @@ Start the application.
 Access the dashboard, and click on "Workers and Connectors".
 ![DowloadElementTemplate](src/main/resources/static/img/Architecture.png?raw=true)
 
+# Build the Docker image
+docker build -t zeebe-cherry-officepdf:1.0.0 .

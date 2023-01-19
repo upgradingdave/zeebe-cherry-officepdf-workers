@@ -10,7 +10,7 @@ import io.camunda.connector.pdf.extractpages.PdfExtractPagesInput;
 import io.camunda.connector.pdf.extractpages.PdfExtractPagesOutput;
 import io.camunda.connector.pdf.mergedocument.PdfMergeDocumentFunction;
 import io.camunda.connector.pdf.toolbox.PdfToolbox;
-import io.camunda.file.storage.StorageDefinition;
+import io.camunda.filestorage.StorageDefinition;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import org.springframework.stereotype.Component;
 

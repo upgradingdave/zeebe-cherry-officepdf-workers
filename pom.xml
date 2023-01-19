@@ -6,7 +6,7 @@
 
   <groupId>org.camunda.community</groupId>
   <artifactId>zeebe-cherry-officepdf</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
 
   <properties>
     <java.version>17</java.version>
@@ -18,7 +18,7 @@
     <connector-validation.version>0.4.0</connector-validation.version>
 
     <!-- 2.1 contains the file.storage library -->
-    <cherry.version>2.2.1</cherry.version>
+    <cherry.version>2.3.0</cherry.version>
     <cherryofficepdf.version>1.0.0</cherryofficepdf.version>
     <filestorage.version>1.1.0</filestorage.version>
 
@@ -129,7 +129,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-configuration-processor</artifactId>
-      <optional>true</optional>
     </dependency>
 
     <!-- Webjars -->
@@ -277,7 +276,7 @@
         </configuration>
       </plugin>
 
-      <!-- allow mvn run -->
+      <!-- allow mvn spring-boot:run -->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
@@ -287,10 +286,68 @@
         </configuration>
       </plugin>
 
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <manifest>
+              <mainClass>io.camunda.CherryApplication</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+
     </plugins>
-
-
   </build>
 
 
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>connectors</id>
+      <name>Connectors Repository</name>
+      <url>https://artifacts.camunda.com/artifactory/connectors/</url>
+    </repository>
+
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <id>connectors-snapshots</id>
+      <name>Connectors Snapshot Repository</name>
+      <url>https://artifacts.camunda.com/artifactory/connectors-snapshots/</url>
+    </repository>
+
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>camunda-community</id>
+      <name>Camunda Community</name>
+      <url>https://artifacts.camunda.com/artifactory/camunda-bpm-community-extensions/</url>
+    </repository>
+  </repositories>
 </project>

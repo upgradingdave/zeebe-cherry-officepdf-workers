@@ -9,7 +9,7 @@ import io.camunda.connector.pdf.mergedocument.PdfMergeDocumentFunction;
 import io.camunda.connector.pdf.mergedocument.PdfMergeDocumentInput;
 import io.camunda.connector.pdf.mergedocument.PdfMergeDocumentOutput;
 import io.camunda.connector.pdf.toolbox.PdfToolbox;
-import io.camunda.file.storage.StorageDefinition;
+import io.camunda.filestorage.StorageDefinition;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;

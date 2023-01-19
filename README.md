@@ -11,15 +11,28 @@ The project use the Cherry framework. See the documentation on [Cherry Framework
 Update src/main/resources/application.properties and set up information to connect to your Zeebe engine (local or in the cloud)
 
 ## Start the application
+The collection can be start using the start.sh/.bat file
 
-The collection cqn be start using the start.sh/.bat file
+````
+> start.[bat|sh]
+````
+or 
+````
+mvn spring-boot:run
+````
 
 ## Access the dashboard
-Then access the server on localhost:9081. 
+Access the server on localhost:9081. Port number can be change in the application.properties.
 
-## design your process
+
+# Design your process
+
 You can download from the application the element-template files to design your process
 
+1. Start the application.
+2. Access the dashboard, and click on "Workers and Connectors".
+
+![DownloadElementTemplate](src/main/resources/static/img/DownloadElementTemplateCollection.png?raw=true)
 
 # Manage files (or documents)
 
@@ -81,12 +94,6 @@ Edit src/main/resources/application.properties and set up the connection to your
 Note: using the Saas service, go to Client, create a new Client and click on "Spring Boot" button to doawnload properties
 
 
-
-## upload the template-file in the modeler
-Start the application.
-
-Access the dashboard, and click on "Workers and Connectors".
-![DowloadElementTemplate](src/main/resources/static/img/Architecture.png?raw=true)
 
 # Build the Docker image
 docker build -t zeebe-cherry-officepdf:1.0.0 .

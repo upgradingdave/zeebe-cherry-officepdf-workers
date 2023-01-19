@@ -8,6 +8,7 @@ import io.camunda.connector.api.outbound.OutboundConnectorContext;
 import io.camunda.connector.officetopdf.OfficeToPdfFunction;
 import io.camunda.connector.officetopdf.OfficeToPdfInput;
 import io.camunda.connector.officetopdf.OfficeToPdfOutput;
+import io.camunda.filestorage.StorageDefinition;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +30,7 @@ public class OfficeToPdfFacade extends AbstractConnector {
             RunnerParameter.getInstance(OfficeToPdfInput.INPUT_DESTINATION_FILE_NAME, "Destination file name",
                 String.class, RunnerParameter.Level.REQUIRED, "Destination file name"),
             RunnerParameter.getInstance(OfficeToPdfInput.INPUT_DESTINATION_STORAGEDEFINITION,
-                "Destination storage definition", String.class, null, RunnerParameter.Level.OPTIONAL,
+                "Destination storage definition", String.class, StorageDefinition.StorageDefinitionType.JSON.toString(), RunnerParameter.Level.OPTIONAL,
                 "Storage Definition use to describe how to save the file. If not provided, the Source file's storage definition is used.")
 
         ),

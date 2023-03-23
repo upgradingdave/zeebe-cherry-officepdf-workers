@@ -1,3 +1,5 @@
 /.idea/
 /target/
 /src/test/resources/pdf/output/
+/cherry.db.trace.db
+/cherry.db.mv.db
